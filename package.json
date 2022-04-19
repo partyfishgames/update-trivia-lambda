@@ -1,0 +1,30 @@
+{
+  "name": "update-trivia-lambda",
+  "version": "1.0.0",
+  "description": "Code for the AWS Lambda function that will update the trivia database with the most up-to-date questions.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "pretest": "npm run build",
+    "test": "node dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/partyfishgames/update-trivia-lambda.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/partyfishgames/update-trivia-lambda/issues"
+  },
+  "homepage": "https://github.com/partyfishgames/update-trivia-lambda#readme",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.93",
+    "typescript": "^4.6.3"
+  },
+  "dependencies": {
+    "aws-lambda": "^1.0.7",
+    "aws-sdk": "^2.1112.0",
+    "axios": "^0.26.1"
+  }
+}
