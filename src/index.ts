@@ -1,42 +1,51 @@
 import { DynamoDB } from 'aws-sdk';
 import { APIGatewayEvent, Context } from 'aws-lambda';
-import fetch from 'node-fetch';
+import axios from 'axios';
 
-const client = new DynamoDB.DocumentClient({ region: 'us-east-1' });
-
-export const handler = async (event: APIGatewayEvent, context: Context) => {
-    const qFile = await fetchFile();
-    const question = await fetchQuestion();
-    if (question.length == 1) {
-        const response = {
-            statusCode: 500,
-            body: JSON.stringify('Couldn\'t fetch question'),
-        };
-        return response;
-    }
-    
-    const response = {
-        statusCode: 200,
-        body: JSON.stringify('Question successfully fetched'),
-    };
-    
-    return response;
-
-}
-
+// const client = new DynamoDB.DocumentClient({ region: 'us-east-1' });
 
 const fetchFile = async () => {
 
-    const response = await fetch('https://raw.githubusercontent.com/partyfishgames/trivia/main/trivia.json');
-    return response;
+    const response = await axios.get('https://raw.githubusercontent.com/partyfishgames/trivia/main/trivia.json');
+    const json = response.data;
+    return json
 
 }
 
-async function fetchQuestion() {
+export const handler = async () => { //(event: APIGatewayEvent, context: Context) => {
+    const qFile = await fetchFile();
+    console.log(qFile[0]);
+    
+    // const question = await fetchQuestion();
+    // if (question.length == 1) {
+    //     const response = {
+    //         statusCode: 500,
+    //         body: JSON.stringify('Couldn\'t fetch question'),
+    //     };
+    //     return response;
+    // }
+    
+    // const response = {
+    //     statusCode: 200,
+    //     body: JSON.stringify('Question successfully fetched'),
+    // };
+    
+    // return response;
+
+}
+
+
+async function fetchQuestion(client: DynamoDB.DocumentClient) {
     const table = 'NewTriviaQs';
     
     const input = {TableName: table};
-    var numItems = (await client.scan(input)).Items.length;
+    var response = await client.scan(input).promise();
+
+    if (!response.Items || response.Items.length == 0) {
+        return ['None']
+    }
+
+    var numItems = response.Items.length;
     
     var random_index = Math.floor(Math.random()*numItems);
     
@@ -55,7 +64,9 @@ async function fetchQuestion() {
 
     try {
         const data = await client.query(params).promise();
-        // const data = await client.query(params).promise()
+        if (!data.Items) {
+            throw Error('Invalid response data');
+        }
         console.log('Success');
         console.log(data);
   
@@ -65,7 +76,7 @@ async function fetchQuestion() {
         return question;
 
     } catch (err) {
-        console.log('Failure: ', err.message);
+        console.log('Failure: ', err);
         return ['None'];
     }
 }

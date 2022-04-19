@@ -2,9 +2,11 @@
   "name": "update-trivia-lambda",
   "version": "1.0.0",
   "description": "Code for the AWS Lambda function that will update the trivia database with the most up-to-date questions.",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "pretest": "npm run build",
+    "test": "node dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -23,6 +25,6 @@
   "dependencies": {
     "aws-lambda": "^1.0.7",
     "aws-sdk": "^2.1112.0",
-    "node-fetch": "^3.2.3"
+    "axios": "^0.26.1"
   }
 }
